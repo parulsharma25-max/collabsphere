@@ -200,7 +200,7 @@ function Files() {
 
             const response =
                 await fetch(
-                    `http://localhost:5000/${file.filePath}`
+                    `https://collabsphere-backend-mvbt.onrender.com/${file.filePath}`
                 );
 
             if (!response.ok) {
@@ -234,8 +234,7 @@ function Files() {
     const previewFile = (file) => {
 
         const fileUrl =
-            `http://localhost:5000/${file.filePath}`;
-
+    `https://collabsphere-backend-mvbt.onrender.com/${file.filePath}`;
         window.open(
             fileUrl,
             "_blank"
