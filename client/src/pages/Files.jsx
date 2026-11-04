@@ -10,7 +10,8 @@ import {
 } from "../services/api";
 
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL =
+    "https://collabsphere-backend-mvbt.onrender.com";
 
 
 function Files() {
@@ -408,10 +409,6 @@ function Files() {
     };
 
 
-    // ==========================================
-    // CHECK CODE FILE
-    // ==========================================
-
     const isCodeFile = (
         fileName
     ) => {
@@ -465,9 +462,6 @@ function Files() {
             </div>
 
 
-            {/* ==================================
-                PROJECT SELECTOR
-            ================================== */}
 
             <div className="panel project-selector">
 
