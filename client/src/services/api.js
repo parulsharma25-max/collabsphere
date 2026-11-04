@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL =
+    "https://collabsphere-backend-mvbt.onrender.com/api";
+
 
 
 
@@ -27,7 +29,6 @@ export const apiRequest = async (
     }
 
 
-    // JWT token
     if (token) {
 
         headers.Authorization =
@@ -63,6 +64,7 @@ export const apiRequest = async (
 
 
 
+
 export const registerUser = (data) =>
     apiRequest(
         "/auth/register",
@@ -74,7 +76,6 @@ export const registerUser = (data) =>
 
 
 
-
 export const loginUser = (data) =>
     apiRequest(
         "/auth/login",
@@ -83,6 +84,7 @@ export const loginUser = (data) =>
             body: JSON.stringify(data)
         }
     );
+
 
 
 
@@ -115,6 +117,7 @@ export const getProjectById = (
 
 
 
+
 export const addMember = (
     projectId,
     email
@@ -140,7 +143,6 @@ export const makeProjectPublic = (
             method: "POST"
         }
     );
-
 
 
 export const getPublicProject = (
@@ -175,7 +177,6 @@ export const getNotes = (
 
 
 
-
 export const updateNote = (
     noteId,
     data
@@ -187,6 +188,7 @@ export const updateNote = (
             body: JSON.stringify(data)
         }
     );
+
 
 
 
@@ -214,7 +216,6 @@ export const explainNote = (
             })
         }
     );
-
 
 
 
@@ -248,8 +249,6 @@ export const generateReadme = (
     );
 
 
-
-
 export const uploadSingleFile = (
     file,
     projectId
@@ -258,18 +257,15 @@ export const uploadSingleFile = (
     const formData =
         new FormData();
 
-
     formData.append(
         "file",
         file
     );
 
-
     formData.append(
         "projectId",
         projectId
     );
-
 
     return apiRequest(
         "/files/upload",
@@ -282,7 +278,6 @@ export const uploadSingleFile = (
 
 
 
-
 export const uploadMultipleFiles = (
     files,
     projectId
@@ -291,24 +286,19 @@ export const uploadMultipleFiles = (
     const formData =
         new FormData();
 
-
     files.forEach(
         (file) => {
-
             formData.append(
                 "files",
                 file
             );
-
         }
     );
-
 
     formData.append(
         "projectId",
         projectId
     );
-
 
     return apiRequest(
         "/files/upload-multiple",
@@ -321,14 +311,12 @@ export const uploadMultipleFiles = (
 
 
 
-
 export const getProjectFiles = (
     projectId
 ) =>
     apiRequest(
         `/files/${projectId}`
     );
-
 
 
 
@@ -343,7 +331,6 @@ export const deleteFile = (
     );
 
 
-// Explain File with Gemini
 
 export const explainFile = (
     content
