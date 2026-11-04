@@ -3,6 +3,7 @@ import {
     createProject,
     getProjects
 } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Projects() {
     const [projects, setProjects] = useState([]);
@@ -14,6 +15,8 @@ function Projects() {
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+
+    const navigate = useNavigate();
 
     const loadProjects = async () => {
         try {
@@ -55,8 +58,13 @@ function Projects() {
         }
     };
 
+    const openProject = (projectId) => {
+        navigate(`/projects/${projectId}`);
+    };
+
     return (
         <div className="content-page">
+
             <div className="section-heading">
                 <p className="eyebrow">
                     WORKSPACE
@@ -71,6 +79,9 @@ function Projects() {
             </div>
 
             <div className="two-column">
+
+                {/* CREATE PROJECT */}
+
                 <div className="panel">
                     <h2>Create Project</h2>
 
@@ -87,6 +98,7 @@ function Projects() {
                     )}
 
                     <form onSubmit={handleSubmit}>
+
                         <label>
                             Project Name
                         </label>
@@ -124,46 +136,73 @@ function Projects() {
                         <button className="primary-btn">
                             Create Project
                         </button>
+
                     </form>
                 </div>
 
+
+                {/* YOUR PROJECTS */}
+
                 <div className="panel">
+
                     <h2>Your Projects</h2>
 
                     {projects.length === 0 ? (
+
                         <div className="empty">
                             No projects found.
                         </div>
+
                     ) : (
+
                         <div className="project-list">
-                            {projects.map(
-                                (project) => (
-                                    <div
-                                        className="project-card"
-                                        key={project._id}
-                                    >
-                                        <div className="project-icon">
-                                            📁
-                                        </div>
 
-                                        <div>
-                                            <h3>
-                                                {project.name}
-                                            </h3>
+                            {projects.map((project) => (
 
-                                            <p>
-                                                {
-                                                    project.description
-                                                }
-                                            </p>
-                                        </div>
+                                <div
+                                    className="project-card"
+                                    key={project._id}
+                                >
+
+                                    <div className="project-icon">
+                                        📁
                                     </div>
-                                )
-                            )}
+
+                                    <div className="project-info">
+
+                                        <h3>
+                                            {project.name}
+                                        </h3>
+
+                                        <p>
+                                            {project.description}
+                                        </p>
+
+                                        <button
+                                            className="primary-btn"
+                                            onClick={() =>
+                                                openProject(
+                                                    project._id
+                                                )
+                                            }
+                                        >
+                                            Open Project
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            ))}
+
                         </div>
+
                     )}
+
                 </div>
+
             </div>
+
         </div>
     );
 }

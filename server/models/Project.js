@@ -6,27 +6,44 @@ const projectSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+
         description: {
             type: String,
             required: true
         },
+
         owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true
         },
+
         members: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
             }
-        ]
+        ],
+
+        isPublic: {
+            type: Boolean,
+            default: false
+        },
+
+        publicSlug: {
+            type: String,
+            unique: true,
+            sparse: true
+        }
     },
     {
         timestamps: true
     }
 );
 
-const Project = mongoose.model("Project", projectSchema);
+const Project = mongoose.model(
+    "Project",
+    projectSchema
+);
 
 export default Project;
