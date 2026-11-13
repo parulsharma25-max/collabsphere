@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
-    getPublicProject
+    getPublicProject,
+    getNotes
 } from "../services/api";
 
 
@@ -12,6 +13,9 @@ function PublicProject() {
 
     const [project, setProject] =
         useState(null);
+
+    const [notes, setNotes] =
+        useState([]);
 
     const [loading, setLoading] =
         useState(true);
@@ -27,13 +31,39 @@ function PublicProject() {
             try {
 
                 const data =
-                    await getPublicProject(
-                        slug
+                    await getPublicProject(slug);
+
+                const projectData =
+                    data.project;
+
+                setProject(projectData);
+
+
+                /*
+                 Get project notes
+                */
+
+                try {
+
+                    const notesData =
+                        await getNotes(
+                            projectData._id
+                        );
+
+                    setNotes(
+                        notesData.notes ||
+                        notesData ||
+                        []
                     );
 
-                setProject(
-                    data.project
-                );
+                } catch (noteError) {
+
+                    console.log(
+                        "Notes could not be loaded:",
+                        noteError.message
+                    );
+
+                }
 
             } catch (error) {
 
@@ -97,6 +127,7 @@ function PublicProject() {
 
         <div className="content-page">
 
+
             <div className="section-heading">
 
                 <p className="eyebrow">
@@ -113,6 +144,8 @@ function PublicProject() {
 
             </div>
 
+
+            {/* Project Information */}
 
             <div className="panel">
 
@@ -136,6 +169,8 @@ function PublicProject() {
 
             </div>
 
+
+            {/* Members */}
 
             <div className="panel">
 
@@ -162,6 +197,56 @@ function PublicProject() {
                         </div>
 
                     )
+                )}
+
+            </div>
+
+
+            {/* README / Notes */}
+
+            <div className="panel">
+
+                <h2>
+                    README / Project Notes
+                </h2>
+
+                {notes.length === 0 ? (
+
+                    <p>
+                        No public notes available
+                        for this project.
+                    </p>
+
+                ) : (
+
+                    notes.map((note) => (
+
+                        <div
+                            key={note._id}
+                            className="panel"
+                            style={{
+                                marginTop: "15px"
+                            }}
+                        >
+
+                            <h3>
+                                {note.title}
+                            </h3>
+
+                            <div
+                                style={{
+                                    whiteSpace:
+                                        "pre-wrap",
+                                    lineHeight: "1.7"
+                                }}
+                            >
+                                {note.content}
+                            </div>
+
+                        </div>
+
+                    ))
+
                 )}
 
             </div>

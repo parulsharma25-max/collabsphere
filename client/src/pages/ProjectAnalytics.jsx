@@ -21,12 +21,14 @@ function ProjectAnalytics() {
     const [filesCount, setFilesCount] =
         useState(0);
 
+    const [memberStats, setMemberStats] =
+        useState([]);
+
     const [loading, setLoading] =
         useState(true);
 
     const [error, setError] =
         useState("");
-
 
 
     const loadAnalytics = async () => {
@@ -47,9 +49,10 @@ function ProjectAnalytics() {
             ]);
 
 
-            setProject(
-                projectData.project
-            );
+            const projectInfo =
+                projectData.project;
+
+            setProject(projectInfo);
 
 
             const notes =
@@ -64,13 +67,78 @@ function ProjectAnalytics() {
                 [];
 
 
-            setNotesCount(
-                notes.length
-            );
+            setNotesCount(notes.length);
 
-            setFilesCount(
-                files.length
-            );
+            setFilesCount(files.length);
+
+
+            /*
+             Create contribution statistics
+             for every project member
+            */
+
+            const members =
+                projectInfo?.members || [];
+
+
+            const stats =
+                members.map((member) => {
+
+                    const memberId =
+                        typeof member === "object"
+                            ? member._id
+                            : member;
+
+
+                    const notesCreated =
+                        notes.filter((note) => {
+
+                            const creator =
+                                note.createdBy;
+
+                            const creatorId =
+                                typeof creator === "object"
+                                    ? creator?._id
+                                    : creator;
+
+                            return (
+                                String(creatorId) ===
+                                String(memberId)
+                            );
+
+                        }).length;
+
+
+                    const filesUploaded =
+                        files.filter((file) => {
+
+                            const uploader =
+                                file.uploadedBy;
+
+                            const uploaderId =
+                                typeof uploader === "object"
+                                    ? uploader?._id
+                                    : uploader;
+
+                            return (
+                                String(uploaderId) ===
+                                String(memberId)
+                            );
+
+                        }).length;
+
+
+                    return {
+                        member,
+                        notesCreated,
+                        filesUploaded
+                    };
+
+                });
+
+
+            setMemberStats(stats);
+
 
         } catch (error) {
 
@@ -92,7 +160,6 @@ function ProjectAnalytics() {
     }, [id]);
 
 
-
     if (loading) {
 
         return (
@@ -109,7 +176,6 @@ function ProjectAnalytics() {
             </div>
         );
     }
-
 
 
     if (error) {
@@ -142,7 +208,6 @@ function ProjectAnalytics() {
         <div className="content-page">
 
 
-
             <div className="section-heading">
 
                 <p className="eyebrow">
@@ -154,12 +219,12 @@ function ProjectAnalytics() {
                 </h1>
 
                 <p>
-                    View basic activity and
-                    contribution information
-                    for this project.
+                    View project activity and
+                    member contributions.
                 </p>
 
             </div>
+
 
             <div className="panel">
 
@@ -174,11 +239,8 @@ function ProjectAnalytics() {
             </div>
 
 
-
             <div className="two-column">
 
-
-                
 
                 <div className="panel">
 
@@ -197,8 +259,6 @@ function ProjectAnalytics() {
                 </div>
 
 
-                
-
                 <div className="panel">
 
                     <div className="project-icon">
@@ -216,8 +276,6 @@ function ProjectAnalytics() {
                 </div>
 
 
-                
-
                 <div className="panel">
 
                     <div className="project-icon">
@@ -233,7 +291,6 @@ function ProjectAnalytics() {
                     </p>
 
                 </div>
-
 
 
                 <div className="panel">
@@ -257,7 +314,111 @@ function ProjectAnalytics() {
             </div>
 
 
-         
+            {/* Member Contribution */}
+
+            <div className="panel">
+
+                <h2>
+                    Member Contributions
+                </h2>
+
+                <p>
+                    Notes and files contributed
+                    by each project member.
+                </p>
+
+
+                {memberStats.length === 0 ? (
+
+                    <p>
+                        No members found.
+                    </p>
+
+                ) : (
+
+                    <div>
+
+                        {memberStats.map(
+                            (item, index) => {
+
+                                const member =
+                                    item.member;
+
+                                const name =
+                                    typeof member === "object"
+                                        ? (
+                                            member.name ||
+                                            member.username ||
+                                            member.email ||
+                                            "Member"
+                                        )
+                                        : "Member";
+
+
+                                const email =
+                                    typeof member === "object"
+                                        ? member.email
+                                        : "";
+
+
+                                return (
+
+                                    <div
+                                        key={
+                                            typeof member === "object"
+                                                ? member._id
+                                                : member
+                                        }
+                                        style={{
+                                            padding: "15px 0",
+                                            borderBottom:
+                                                "1px solid #ddd"
+                                        }}
+                                    >
+
+                                        <h3>
+                                            {name}
+                                        </h3>
+
+                                        {email && (
+                                            <p>
+                                                {email}
+                                            </p>
+                                        )}
+
+
+                                        <p>
+                                            📝 Notes Created:{" "}
+                                            <strong>
+                                                {
+                                                    item.notesCreated
+                                                }
+                                            </strong>
+                                        </p>
+
+
+                                        <p>
+                                            📁 Files Uploaded:{" "}
+                                            <strong>
+                                                {
+                                                    item.filesUploaded
+                                                }
+                                            </strong>
+                                        </p>
+
+                                    </div>
+
+                                );
+
+                            }
+                        )}
+
+                    </div>
+
+                )}
+
+            </div>
+
 
             <div className="panel">
 
@@ -270,13 +431,11 @@ function ProjectAnalytics() {
                     <strong>
                         {membersCount}
                     </strong>{" "}
-                    members,
-                    {" "}
+                    members,{" "}
                     <strong>
                         {notesCount}
                     </strong>{" "}
-                    notes and
-                    {" "}
+                    notes and{" "}
                     <strong>
                         {filesCount}
                     </strong>{" "}

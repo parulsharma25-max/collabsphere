@@ -6,7 +6,8 @@ import {
 
 import {
     getProjectById,
-    addMember
+    addMember,
+    makeProjectPublic
 } from "../services/api";
 
 
@@ -15,8 +16,6 @@ function ProjectDetails() {
     const { id } = useParams();
 
     const navigate = useNavigate();
-
-
 
     const [project, setProject] = useState(null);
 
@@ -28,7 +27,6 @@ function ProjectDetails() {
 
     const [error, setError] = useState("");
 
-
     const loadProject = async () => {
 
         try {
@@ -36,18 +34,13 @@ function ProjectDetails() {
             setLoading(true);
             setError("");
 
-            const data =
-                await getProjectById(id);
+            const data = await getProjectById(id);
 
-            setProject(
-                data.project
-            );
+            setProject(data.project);
 
         } catch (error) {
 
-            setError(
-                error.message
-            );
+            setError(error.message);
 
         } finally {
 
@@ -57,13 +50,11 @@ function ProjectDetails() {
     };
 
 
-
     useEffect(() => {
 
         loadProject();
 
     }, [id]);
-
 
 
     const handleAddMember = async (e) => {
@@ -73,46 +64,66 @@ function ProjectDetails() {
         setMessage("");
         setError("");
 
-
         if (!email.trim()) {
 
-            setError(
-                "Please enter user email"
-            );
+            setError("Please enter user email");
 
             return;
         }
 
-
         try {
 
-            const data =
-                await addMember(
-                    id,
-                    email
-                );
-
+            const data = await addMember(
+                id,
+                email
+            );
 
             setMessage(
                 data.message ||
                 "Member added successfully"
             );
 
-
             setEmail("");
-
 
             await loadProject();
 
         } catch (error) {
 
-            setError(
-                error.message
-            );
+            setError(error.message);
 
         }
     };
 
+
+    const handleMakePublic = async () => {
+
+        setMessage("");
+        setError("");
+
+        try {
+
+            const data = await makeProjectPublic(id);
+
+            setProject((prev) => ({
+                ...prev,
+                ...data.project,
+                publicSlug:
+                    data.publicSlug ||
+                    data.project?.publicSlug ||
+                    prev.publicSlug
+            }));
+
+            setMessage(
+                data.message ||
+                "Project is now public."
+            );
+
+        } catch (error) {
+
+            setError(error.message);
+
+        }
+    };
 
 
     if (loading) {
@@ -131,7 +142,6 @@ function ProjectDetails() {
             </div>
         );
     }
-
 
 
     if (!project) {
@@ -153,9 +163,7 @@ function ProjectDetails() {
                     <button
                         className="primary-btn"
                         onClick={() =>
-                            navigate(
-                                "/projects"
-                            )
+                            navigate("/projects")
                         }
                     >
                         Back to Projects
@@ -168,11 +176,8 @@ function ProjectDetails() {
     }
 
 
-
     return (
         <div className="content-page">
-
-
 
             <div className="section-heading">
 
@@ -189,7 +194,6 @@ function ProjectDetails() {
                 </p>
 
             </div>
-
 
 
             {message && (
@@ -211,7 +215,6 @@ function ProjectDetails() {
 
 
             <div className="project-details-grid">
-
 
 
                 <div className="panel">
@@ -325,7 +328,6 @@ function ProjectDetails() {
                 </div>
 
 
-
                 <div className="panel">
 
                     <h2>
@@ -338,9 +340,7 @@ function ProjectDetails() {
                     </p>
 
                     <form
-                        onSubmit={
-                            handleAddMember
-                        }
+                        onSubmit={handleAddMember}
                     >
 
                         <label>
@@ -351,9 +351,7 @@ function ProjectDetails() {
                             type="email"
                             value={email}
                             onChange={(e) =>
-                                setEmail(
-                                    e.target.value
-                                )
+                                setEmail(e.target.value)
                             }
                             placeholder="user@example.com"
                             required
@@ -369,7 +367,6 @@ function ProjectDetails() {
                     </form>
 
                 </div>
-
 
 
                 <div className="panel">
@@ -424,7 +421,6 @@ function ProjectDetails() {
                 </div>
 
 
-
                 <div className="panel">
 
                     <h2>
@@ -466,22 +462,38 @@ function ProjectDetails() {
                     <button
                         type="button"
                         className="primary-btn"
-                        onClick={() =>
-                            setMessage(
-                                "Public sharing will be added next."
-                            )
-                        }
+                        onClick={handleMakePublic}
                     >
                         Make Project Public
                     </button>
+
+                    {project.publicSlug && (
+
+                        <div style={{ marginTop: "15px" }}>
+
+                            <p>
+                                <strong>
+                                    Public Link:
+                                </strong>
+                            </p>
+
+                            <a
+                                href={`/public/projects/${project.publicSlug}`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                Open Public Project
+                            </a>
+
+                        </div>
+
+                    )}
 
                 </div>
 
 
             </div>
 
-
-           
 
             <div
                 style={{
@@ -492,9 +504,7 @@ function ProjectDetails() {
                 <button
                     className="primary-btn"
                     onClick={() =>
-                        navigate(
-                            "/projects"
-                        )
+                        navigate("/projects")
                     }
                 >
                     ← Back to Projects
